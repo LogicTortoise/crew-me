@@ -43,6 +43,9 @@ export TRAVEL_LOG_FILE="${TRAVEL_LOG_FILE:-logs/travel.log}"
 # Force CrewAI storage into project folder to avoid permission issues
 export CREWAI_STORAGE_DIR="${CREWAI_STORAGE_DIR:-$PWD/.crewai}"
 
+# Local search service base URL
+export LOCAL_SEARCH_BASE_URL="${LOCAL_SEARCH_BASE_URL:-http://localhost:10004/search}"
+
 # Ensure logs directory exists
 mkdir -p "$(dirname "$TRAVEL_LOG_FILE")"
 mkdir -p "$CREWAI_STORAGE_DIR"

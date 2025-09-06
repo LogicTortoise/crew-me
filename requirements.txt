@@ -2,3 +2,4 @@ crewai>=0.41.0
 crewai-tools>=0.4.0
 python-dotenv>=1.0.0
 rich>=13.7.0
+requests>=2.32.0

@@ -1,6 +1,9 @@
 from typing import Dict, Any
 
 import os
+import json
+from urllib.parse import urlencode, quote_plus
+import requests
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai.tools import tool
 
@@ -64,6 +67,74 @@ def city_info(city: str) -> str:
     )
 
 
+@tool("本地搜索")
+def local_search(query: str, format: str = "json") -> str:
+    """
+    使用本地搜索服务检索实时信息。
+    默认请求: http://localhost:10004/search?q=...&format=json
+    可用环境变量 LOCAL_SEARCH_BASE_URL 覆盖，示例: http://localhost:10004/search
+
+    输入: query（任意查询，如“深圳今天天气”）
+    输出: 将 JSON 结果提炼为简要要点；若无法解析 JSON，返回原始文本（截断）。
+    """
+    base = os.getenv("LOCAL_SEARCH_BASE_URL", "http://localhost:10004/search")
+    try:
+        params = {"q": query, "format": format}
+        url = f"{base}?{urlencode(params, quote_via=quote_plus)}"
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+
+        ctype = resp.headers.get("Content-Type", "")
+        text = resp.text
+        # 尝试解析 JSON
+        data = None
+        if "json" in ctype or text.strip().startswith(('{', '[')):
+            try:
+                data = resp.json()
+            except Exception:
+                data = None
+
+        if data is None:
+            # 纯文本返回，做截断
+            snippet = text if len(text) <= 1200 else text[:1200] + "..."
+            return f"[search:raw]\n{snippet}"
+
+        # 尝试通用结构化提取
+        # 兼容常见字段: results/items/data，与 title/summary/url/score 等
+        items = []
+        for key in ("results", "items", "data"):
+            if isinstance(data, dict) and key in data and isinstance(data[key], list):
+                items = data[key]
+                break
+        if not items and isinstance(data, list):
+            items = data
+
+        lines = [f"[search:query] {query}"]
+        if items:
+            for i, it in enumerate(items[:5], 1):
+                if isinstance(it, dict):
+                    title = it.get("title") or it.get("name") or it.get("headline") or "(no-title)"
+                    summary = it.get("summary") or it.get("snippet") or it.get("description") or ""
+                    url = it.get("url") or it.get("link") or ""
+                    part = f"{i}. {title}\n   {summary}"
+                    if url:
+                        part += f"\n   {url}"
+                else:
+                    part = f"{i}. {str(it)[:300]}"
+                lines.append(part)
+        else:
+            # 无结构化条目，返回压缩 JSON 片段
+            compact = json.dumps(data, ensure_ascii=False)[:1200]
+            lines.append(f"[search:json] {compact}")
+
+        return "\n".join(lines)
+
+    except requests.HTTPError as e:
+        return f"[search:error] HTTP {e.response.status_code}: {e.response.text[:400]}"
+    except Exception as e:
+        return f"[search:error] {type(e).__name__}: {e}"
+
+
 def _get_llm(model_env: str, temperature: float = 0.2) -> LLM:
     """Create a real LLM from env model name. Example: 'openai/gpt-4o-mini'."""
     model = os.getenv(model_env) or os.getenv("CREWAI_MODEL") or "openai/gpt-4o-mini"
@@ -84,7 +155,7 @@ def build_crew() -> Crew:
         backstory=(
             "资深自由行博主，擅长按地铁/步行路径串联景点，关注高峰时段与预约机制。"
         ),
-        tools=[city_info],
+        tools=[city_info, local_search],
         allow_delegation=False,
         llm=researcher_llm,
         verbose=True,
@@ -127,7 +198,8 @@ def build_crew() -> Crew:
             "1) 城市画像（分区/交通/就餐/花费等概览）\n"
             "2) 3-6 个核心景点（聚合相邻片区）\n"
             "3) 交通方式与预约要点\n"
-            "请调用工具获取城市信息，并补充常识性建议。"
+            "务必优先调用‘本地搜索’工具获取实时要点（如天气/活动/闭馆提醒），"
+            "示例：‘深圳今天天气’或与 {destination} 相关的关键词；若搜不到，再用‘城市信息检索’补充常识建议。"
         ),
         expected_output=(
             "一份结构化研究笔记（markdown）：城市画像/必看片区/交通与预约/预算提示"
