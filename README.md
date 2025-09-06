@@ -100,6 +100,7 @@ python main.py \
 - `RESEARCHER_MODEL`、`PLANNER_MODEL`、`REVIEWER_MODEL`：按 Agent 细分的模型配置（优先级高于 `CREWAI_MODEL`）。
 - `CREWAI_TELEMETRY_OPT_OUT=1`：可选，关闭遥测。
 - `LOCAL_SEARCH_BASE_URL`：本地搜索服务地址，默认 `http://localhost:10004/search`（工具会以 `?q=...&format=json` 调用）。
+- `LOCAL_FETCH_BASE_URL`：本地抓取服务地址，默认 `http://localhost:10005/fetch`（工具会以 `?url=...&wait_time=3` 调用）。
 
 建议把上述变量写入 `~/.zshrc`，例如：
 ```bash
@@ -120,7 +121,9 @@ export CREWAI_MODEL=openai/gpt-4o-mini
 ## 功能说明
 
 - 多 Agent 顺序流水线（真实 LLM 调用）：
-  - 旅行研究员：使用“本地搜索”工具（调用 `LOCAL_SEARCH_BASE_URL`，默认 `http://localhost:10004/search`）获取实时信息（如天气/活动/闭馆提醒等）并整理城市画像与要点。
+  - 旅行研究员：
+    - 使用“本地搜索”工具（`LOCAL_SEARCH_BASE_URL`，默认 `http://localhost:10004/search`）获取实时信息（如天气/活动/闭馆提醒等）。
+    - 选取搜索结果中的链接，使用“网页抓取”工具（`LOCAL_FETCH_BASE_URL`，默认 `http://localhost:10005/fetch`）抓取网页并提炼关键信息。
   - 行程规划师：按天（上午/下午/晚上）输出可执行行程表，控制密度与预算。
   - 审稿人：审查可行性与风险，给出改进版最终行程，可基于“修改请求”微调。
 - 日志：
@@ -136,6 +139,14 @@ export CREWAI_MODEL=openai/gpt-4o-mini
 curl -s "http://localhost:10004/search?q=深圳今天天气&format=json" | head
 ```
 若返回 JSON，CLI 中研究员会自动调用“本地搜索”工具，并将结果要点出现在日志中（带有 `[search:query]` / `[search:raw]` 标记）。
+
+### 网页抓取服务自检
+
+先用 curl 检查抓取服务：
+```bash
+curl -s "http://localhost:10005/fetch?url=https://baidu.com&wait_time=3" | head
+```
+若返回 HTML/文本或 JSON，CLI 中研究员会在需要时调用“网页抓取”工具（日志中带有 `[fetch:url]` / `[fetch:error]` 标记）。
 
 ## 主要文件
 

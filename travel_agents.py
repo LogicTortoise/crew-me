@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 import os
 import json
+import subprocess
 from urllib.parse import urlencode, quote_plus
 import requests
 from crewai import Agent, Task, Crew, Process, LLM
@@ -79,6 +80,51 @@ def local_search(query: str, format: str = "json") -> str:
         return f"[search:error] {type(e).__name__}: {e}"
 
 
+@tool("网页抓取")
+def web_fetch(url: str, wait_time: int = 3) -> str:
+    """
+    使用本地抓取服务对网页进行抓取（可含等待时间）。
+    默认: curl "http://localhost:10005/fetch?url=...&wait_time=3"
+    可用环境变量 LOCAL_FETCH_BASE_URL 覆盖，例如: http://localhost:10005/fetch
+
+    输入: url（完整链接）、wait_time（可选秒数，默认3）
+    输出: 若返回 JSON，尝试提取 text/html 字段；否则返回原始文本片段。
+    """
+    base = os.getenv("LOCAL_FETCH_BASE_URL", "http://localhost:10005/fetch")
+    q = {"url": url, "wait_time": str(wait_time)}
+    full = f"{base}?{urlencode(q, quote_via=quote_plus)}"
+    try:
+        # Prefer curl to follow redirects and behave like the instruction
+        proc = subprocess.run(["curl", "-sL", full], capture_output=True, text=True, timeout=20)
+        if proc.returncode != 0:
+            return f"[fetch:error] curl exit {proc.returncode}: {proc.stderr[:400]}"
+        text = proc.stdout
+        # Try JSON parse
+        data = None
+        if text.strip().startswith(('{', '[')):
+            try:
+                data = json.loads(text)
+            except Exception:
+                data = None
+        if isinstance(data, dict):
+            # common fields
+            for key in ("text", "content", "html"):
+                if key in data and isinstance(data[key], str):
+                    snippet = data[key]
+                    break
+            else:
+                snippet = json.dumps(data, ensure_ascii=False)
+        else:
+            snippet = text
+
+        snippet = snippet if len(snippet) <= 2000 else snippet[:2000] + "..."
+        return f"[fetch:url] {url}\n{snippet}"
+    except subprocess.TimeoutExpired:
+        return f"[fetch:error] Timeout when fetching {url}"
+    except Exception as e:
+        return f"[fetch:error] {type(e).__name__}: {e}"
+
+
 def _get_llm(model_env: str, temperature: float = 0.2) -> LLM:
     """Create a real LLM from env model name. Example: 'openai/gpt-4o-mini'."""
     model = os.getenv(model_env) or os.getenv("CREWAI_MODEL") or "openai/gpt-4o-mini"
@@ -99,7 +145,7 @@ def build_crew() -> Crew:
         backstory=(
             "资深自由行博主，擅长按地铁/步行路径串联景点，关注高峰时段与预约机制。"
         ),
-        tools=[local_search],
+        tools=[local_search, web_fetch],
         allow_delegation=False,
         llm=researcher_llm,
         verbose=True,
@@ -142,8 +188,8 @@ def build_crew() -> Crew:
             "1) 城市画像（分区/交通/就餐/花费等概览）\n"
             "2) 3-6 个核心景点（聚合相邻片区）\n"
             "3) 交通方式与预约要点\n"
-            "务必调用‘本地搜索’工具获取实时要点（如天气/活动/闭馆提醒/突发情况），"
-            "示例：‘{destination} 天气’、‘{destination} 博物馆 闭馆’、‘{destination} 活动’ 等关键词。"
+            "务必调用‘本地搜索’工具获取实时要点（如天气/活动/闭馆/突发情况），"
+            "随后挑选最相关的链接，使用‘网页抓取’工具抓取该页面内容，提炼关键信息与注意事项。"
         ),
         expected_output=(
             "一份结构化研究笔记（markdown）：城市画像/必看片区/交通与预约/预算提示"

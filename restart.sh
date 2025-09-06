@@ -45,6 +45,8 @@ export CREWAI_STORAGE_DIR="${CREWAI_STORAGE_DIR:-$PWD/.crewai}"
 
 # Local search service base URL
 export LOCAL_SEARCH_BASE_URL="${LOCAL_SEARCH_BASE_URL:-http://localhost:10004/search}"
+# Local fetch service base URL
+export LOCAL_FETCH_BASE_URL="${LOCAL_FETCH_BASE_URL:-http://localhost:10005/fetch}"
 
 # Ensure logs directory exists
 mkdir -p "$(dirname "$TRAVEL_LOG_FILE")"
