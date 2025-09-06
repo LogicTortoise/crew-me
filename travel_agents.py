@@ -8,63 +8,7 @@ from crewai import Agent, Task, Crew, Process, LLM
 from crewai.tools import tool
 
 
-# --- Local offline tool: simple city knowledge base ---
-_CITY_DB = {
-    "东京": {
-        "best_time": "3-5月樱花季、10-11月红叶季",
-        "must_see": [
-            "浅草寺与雷门",
-            "上野公园与博物馆群",
-            "涩谷十字路口与新宿都厅",
-            "筑地/丰洲市场美食",
-        ],
-        "avg_cost": "中等偏高，地铁便捷，交通一日票建议",
-        "notes": "景点分散，尽量按地铁线串联，避开早晚高峰。",
-    },
-    "大阪": {
-        "best_time": "3-5月、10-11月",
-        "must_see": [
-            "大阪城公园",
-            "心斋桥与道顿堀美食",
-            "海游馆",
-            "日本环球影城(USJ)",
-        ],
-        "avg_cost": "中等，美食丰富性价比高",
-        "notes": "可联动京都/奈良一日游；尽量避开USJ高峰日。",
-    },
-    "巴黎": {
-        "best_time": "4-6月、9-10月",
-        "must_see": [
-            "卢浮宫",
-            "埃菲尔铁塔",
-            "塞纳河与左岸",
-            "蒙马特高地",
-        ],
-        "avg_cost": "偏高，注意热门博物馆需预约",
-        "notes": "步行+地铁为主，留足博物馆排队与安检时间。",
-    },
-}
-
-
-@tool("城市信息检索")
-def city_info(city: str) -> str:
-    """
-    根据城市名称返回：最佳旅行时间、必看景点、平均花费与注意事项。
-    输入例子: "东京"、"大阪"、"巴黎"。
-    若未知城市，返回通用建议。
-    """
-    data = _CITY_DB.get(city)
-    if not data:
-        return (
-            f"未找到 {city} 的内置资料。请聚焦安全与交通便利，优先串联相邻景点，"
-            "并在博物馆/乐园等热门场景预留预约与排队时间。"
-        )
-    return (
-        f"最佳时间: {data['best_time']}\n"
-        f"必看: {', '.join(data['must_see'])}\n"
-        f"平均花费: {data['avg_cost']}\n"
-        f"提示: {data['notes']}"
-    )
+# No offline mock DB. All live info should go through local_search.
 
 
 @tool("本地搜索")
@@ -155,7 +99,7 @@ def build_crew() -> Crew:
         backstory=(
             "资深自由行博主，擅长按地铁/步行路径串联景点，关注高峰时段与预约机制。"
         ),
-        tools=[city_info, local_search],
+        tools=[local_search],
         allow_delegation=False,
         llm=researcher_llm,
         verbose=True,
@@ -198,8 +142,8 @@ def build_crew() -> Crew:
             "1) 城市画像（分区/交通/就餐/花费等概览）\n"
             "2) 3-6 个核心景点（聚合相邻片区）\n"
             "3) 交通方式与预约要点\n"
-            "务必优先调用‘本地搜索’工具获取实时要点（如天气/活动/闭馆提醒），"
-            "示例：‘深圳今天天气’或与 {destination} 相关的关键词；若搜不到，再用‘城市信息检索’补充常识建议。"
+            "务必调用‘本地搜索’工具获取实时要点（如天气/活动/闭馆提醒/突发情况），"
+            "示例：‘{destination} 天气’、‘{destination} 博物馆 闭馆’、‘{destination} 活动’ 等关键词。"
         ),
         expected_output=(
             "一份结构化研究笔记（markdown）：城市画像/必看片区/交通与预约/预算提示"
