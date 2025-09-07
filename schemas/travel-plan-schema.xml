@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Travel Plan XML Schema Definition -->
+<!-- Version 2.1 - Optimized for LLM Generation -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://travel.plan/schema/v2.1"
+           xmlns="http://travel.plan/schema/v2.1"
+           elementFormDefault="qualified">
+
+  <!-- Root Element -->
+  <xs:element name="TravelPlan" type="TravelPlanType"/>
+
+  <!-- Main Travel Plan Type -->
+  <xs:complexType name="TravelPlanType">
+    <xs:sequence>
+      <xs:element name="Meta" type="MetaType"/>
+      <xs:element name="Timeline" type="TimelineType"/>
+      <xs:element name="GlobalExtensions" type="GlobalExtensionsType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:string" default="2.1"/>
+  </xs:complexType>
+
+  <!-- Meta Information Type -->
+  <xs:complexType name="MetaType">
+    <xs:sequence>
+      <xs:element name="Title" type="xs:string"/>
+      <xs:element name="Summary" type="xs:string" minOccurs="0"/>
+      <xs:element name="TotalDays" type="xs:positiveInteger"/>
+      <xs:element name="Destinations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="City" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Participants" type="ParticipantsType"/>
+      <xs:element name="Budget" type="BudgetSummaryType" minOccurs="0"/>
+      <xs:element name="TravelStyle" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Participants Type -->
+  <xs:complexType name="ParticipantsType">
+    <xs:sequence>
+      <xs:element name="Person" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Role" type="xs:string" minOccurs="0"/>
+            <xs:element name="DepartureFrom" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+          <xs:attribute name="id" type="xs:ID" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Budget Summary Type -->
+  <xs:complexType name="BudgetSummaryType">
+    <xs:sequence>
+      <xs:element name="Currency" type="xs:string" default="CNY"/>
+      <xs:element name="TotalEstimate" type="xs:decimal"/>
+      <xs:element name="PerPerson" type="xs:decimal" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Timeline Type -->
+  <xs:complexType name="TimelineType">
+    <xs:sequence>
+      <xs:element name="Event" type="EventType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Event Type -->
+  <xs:complexType name="EventType">
+    <xs:sequence>
+      <xs:element name="TimeSlot" type="TimeSlotType"/>
+      <xs:element name="Activity" type="ActivityType"/>
+      <xs:element name="Participants" type="EventParticipantsType" minOccurs="0"/>
+      <xs:element name="Locations" type="LocationsType" minOccurs="0"/>
+      <xs:element name="Budget" type="EventBudgetType" minOccurs="0"/>
+      <xs:element name="Extensions" type="ExtensionsType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="type" type="EventTypeEnum" use="required"/>
+  </xs:complexType>
+
+  <!-- Event Type Enumeration -->
+  <xs:simpleType name="EventTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="transport"/>
+      <xs:enumeration value="attraction"/>
+      <xs:enumeration value="dining"/>
+      <xs:enumeration value="accommodation"/>
+      <xs:enumeration value="shopping"/>
+      <xs:enumeration value="entertainment"/>
+      <xs:enumeration value="rest"/>
+      <xs:enumeration value="custom"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Time Slot Type (Relative Day Format) -->
+  <xs:complexType name="TimeSlotType">
+    <xs:sequence>
+      <xs:element name="Day" type="xs:positiveInteger"/> <!-- 1, 2, 3... -->
+      <xs:element name="StartTime" type="TimeType"/>
+      <xs:element name="EndTime" type="TimeType" minOccurs="0"/>
+      <xs:element name="Duration" type="xs:positiveInteger" minOccurs="0"/> <!-- minutes -->
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Time Type (HH:MM format) -->
+  <xs:simpleType name="TimeType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([01][0-9]|2[0-3]):[0-5][0-9]"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Activity Type -->
+  <xs:complexType name="ActivityType">
+    <xs:sequence>
+      <xs:element name="Title" type="xs:string"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0"/>
+      <xs:element name="Category" type="xs:string" minOccurs="0"/>
+      <xs:element name="Highlights" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Item" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Event Participants Type -->
+  <xs:complexType name="EventParticipantsType">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="PersonRef" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Transport" type="xs:string" minOccurs="0"/>
+              <xs:element name="Route" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:IDREF" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:sequence>
+        <xs:element name="SharedTransport" type="xs:string" minOccurs="0"/>
+        <xs:element name="Route" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:choice>
+    <xs:attribute name="all" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <!-- Locations Type -->
+  <xs:complexType name="LocationsType">
+    <xs:sequence>
+      <xs:element name="Location" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Address" type="xs:string" minOccurs="0"/>
+            <xs:element name="Coordinates" type="CoordinatesType" minOccurs="0"/>
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+          </xs:sequence>
+          <xs:attribute name="type" type="xs:string"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Coordinates Type -->
+  <xs:complexType name="CoordinatesType">
+    <xs:attribute name="lat" type="xs:decimal" use="required"/>
+    <xs:attribute name="lng" type="xs:decimal" use="required"/>
+  </xs:complexType>
+
+  <!-- Event Budget Type -->
+  <xs:complexType name="EventBudgetType">
+    <xs:sequence>
+      <xs:element name="Estimated" type="xs:decimal"/>
+      <xs:element name="Category" type="xs:string" minOccurs="0"/>
+      <xs:element name="PerPerson" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="Breakdown" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Item" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute name="person" type="xs:IDREF"/>
+                    <xs:attribute name="amount" type="xs:decimal"/>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Extensions Type (Flexible) -->
+  <xs:complexType name="ExtensionsType">
+    <xs:sequence>
+      <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Global Extensions Type -->
+  <xs:complexType name="GlobalExtensionsType">
+    <xs:sequence>
+      <xs:element name="Preferences" type="PreferencesType" minOccurs="0"/>
+      <xs:element name="Notes" type="NotesType" minOccurs="0"/>
+      <xs:element name="EmergencyContacts" type="EmergencyContactsType" minOccurs="0"/>
+      <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Preferences Type -->
+  <xs:complexType name="PreferencesType">
+    <xs:sequence>
+      <xs:element name="TravelPace" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="slow"/>
+            <xs:enumeration value="moderate"/>
+            <xs:enumeration value="fast"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="FoodPreferences" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Preference" type="xs:string" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ActivityPreferences" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Preference" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute name="weight" type="xs:decimal"/>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Notes Type -->
+  <xs:complexType name="NotesType">
+    <xs:sequence>
+      <xs:element name="Note" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="type" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Emergency Contacts Type -->
+  <xs:complexType name="EmergencyContactsType">
+    <xs:sequence>
+      <xs:element name="Contact" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="type" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

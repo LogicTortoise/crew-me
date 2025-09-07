@@ -1,6 +1,6 @@
 # Travel Planner (CrewAI)
 
-一个最小可运行的多 Agent 旅游攻略 CLI。内置本地工具与 3 个 Agent（研究员/规划师/审稿人），支持命令行交互与详细日志输出。
+一个最小可运行的多 Agent 旅游攻略 CLI。内置本地工具与默认 3 个 Agent（研究员/规划师/审稿人），并提供“简化 2‑Agent 模式”（规划师/呈现官）。支持命令行交互、XML/Markdown 导出与详细日志输出。
 
 ## 环境准备
 
@@ -27,6 +27,7 @@ pip install -r requirements.txt
   # RESEARCHER_MODEL=openai/gpt-4o-mini
   # PLANNER_MODEL=openai/gpt-4o-mini
   # REVIEWER_MODEL=openai/gpt-4o-mini
+  # PRESENTER_MODEL=openai/gpt-4o-mini
   # 可选：关闭遥测
   CREWAI_TELEMETRY_OPT_OUT=1
   ```
@@ -60,8 +61,29 @@ python main.py --model openai/gpt-4o-mini
 python main.py \
   --researcher-model openai/gpt-4o-mini \
   --planner-model openai/gpt-4o-mini \
-  --reviewer-model openai/gpt-4o-mini
+  --reviewer-model openai/gpt-4o-mini \
+  --presenter-model openai/gpt-4o-mini
 ```
+
+## 简化 2‑Agent 模式 + 导出
+
+快速落地（不需要 DAG 或提案‑评审循环），使用 2‑Agent：
+
+```bash
+python main.py \
+  --once \
+  --simple \
+  --destination "东京" \
+  --days 3 \
+  --budget "适中" \
+  --preferences "美食, 博物馆" \
+  --output-md outputs/travel_plan.md \
+  --output-xml outputs/travel_plan.xml
+```
+
+说明：
+- 生成的 XML 结构见 `docs/SCHEMA_NOTES.md`，便于映射到你的外部 schema（如 `travel-plan-schema.xml`）。
+- 如需对接严格 XSD 校验，可在提供 XSD 后添加 `lxml` 或 `xmlschema` 并在 `travel_xml.py` 中启用验证逻辑。
 
 ## 重启脚本（包含环境变量）
 
@@ -154,6 +176,8 @@ curl -s "http://localhost:10005/fetch?url=https://baidu.com&wait_time=3" | head
 .
 ├── main.py             # CLI 入口（交互/一次性运行、tee 日志）
 ├── travel_agents.py    # Agents/Tasks/Crew 定义 + 本地工具
+├── simple_agents.py    # 简化 2-Agent 流程（规划+呈现）
+├── travel_xml.py       # Markdown → XML 导出（可选）
 ├── requirements.txt    # 依赖
 └── README.md           # 说明
 ```

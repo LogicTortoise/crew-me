@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TravelPlan xmlns="http://travel.plan/schema/v2.1" version="2.1">
+  <!-- 元信息：描述旅程整体概况 -->
+  <Meta>
+    <Title>杭州成都文化美食之旅</Title>
+    <Summary>探索江南水乡和天府之国的文化与美食</Summary>
+    <TotalDays>5</TotalDays>
+    <Destinations>
+      <City>杭州</City>
+      <City>成都</City>
+    </Destinations>
+    <Participants>
+      <Person id="p1">
+        <Name>张三</Name>
+        <Role>主要组织者</Role>
+        <DepartureFrom>上海</DepartureFrom>
+      </Person>
+      <Person id="p2">
+        <Name>李四</Name>
+        <Role>同行者</Role>
+        <DepartureFrom>北京</DepartureFrom>
+      </Person>
+    </Participants>
+    <Budget>
+      <Currency>CNY</Currency>
+      <TotalEstimate>5000</TotalEstimate>
+      <PerPerson>2500</PerPerson>
+    </Budget>
+    <TravelStyle>文化探索,美食体验,休闲度假</TravelStyle>
+  </Meta>
+  
+  <!-- 时间线：旅程的核心内容 -->
+  <Timeline>
+    <!-- Day 1: 出发日 -->
+    <Event id="e1" type="transport">
+      <TimeSlot>
+        <Day>1</Day>
+        <StartTime>08:00</StartTime>
+        <EndTime>09:30</EndTime>
+        <Duration>90</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>前往杭州</Title>
+        <Description>从各自城市出发前往杭州</Description>
+        <Category>交通</Category>
+      </Activity>
+      
+      <Participants>
+        <PersonRef id="p1">
+          <Transport>高铁G7625</Transport>
+          <Route>上海虹桥 → 杭州东</Route>
+        </PersonRef>
+        <PersonRef id="p2">
+          <Transport>飞机CA1703</Transport>
+          <Route>北京首都 → 杭州萧山</Route>
+        </PersonRef>
+      </Participants>
+      
+      <Locations>
+        <Location type="departure">
+          <Name>上海虹桥站</Name>
+          <Coordinates lat="31.1944" lng="121.3206"/>
+        </Location>
+        <Location type="arrival">
+          <Name>杭州东站</Name>
+          <Address>杭州市江干区天城路1号</Address>
+          <Coordinates lat="30.2907" lng="120.2132"/>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>300</Estimated>
+        <Category>交通</Category>
+        <Breakdown>
+          <Item person="p1" amount="150">高铁票</Item>
+          <Item person="p2" amount="450">机票</Item>
+        </Breakdown>
+      </Budget>
+      
+      <Extensions>
+        <Tips>建议提前到达车站/机场，预留充足时间</Tips>
+        <Weather>晴，温度28℃</Weather>
+      </Extensions>
+    </Event>
+    
+    <Event id="e2" type="attraction">
+      <TimeSlot>
+        <Day>1</Day>
+        <StartTime>10:00</StartTime>
+        <EndTime>12:30</EndTime>
+        <Duration>150</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>西湖游览</Title>
+        <Description>游船观光，欣赏西湖十景</Description>
+        <Category>景点</Category>
+        <Highlights>
+          <Item>断桥残雪</Item>
+          <Item>平湖秋月</Item>
+          <Item>湖心亭</Item>
+        </Highlights>
+      </Activity>
+      
+      <Participants all="true"/>
+      
+      <Locations>
+        <Location type="main">
+          <Name>西湖风景名胜区</Name>
+          <Address>杭州市西湖区</Address>
+          <Coordinates lat="30.2420" lng="120.1462"/>
+          <OpenHours>全天开放</OpenHours>
+          <TicketInfo>景区免费，游船55元/人</TicketInfo>
+        </Location>
+        <Location type="photo_spot">
+          <Name>断桥</Name>
+          <BestPhotoAngle>桥上远眺雷峰塔</BestPhotoAngle>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>110</Estimated>
+        <Category>门票</Category>
+        <PerPerson>55</PerPerson>
+      </Budget>
+      
+      <Extensions>
+        <PhotoSpot>true</PhotoSpot>
+        <CrowdLevel>moderate</CrowdLevel>
+        <RecommendedDuration>2-3小时</RecommendedDuration>
+        <Tips>建议租借自行车环湖，上午光线较好适合拍照</Tips>
+      </Extensions>
+    </Event>
+    
+    <Event id="e3" type="dining">
+      <TimeSlot>
+        <Day>1</Day>
+        <StartTime>12:30</StartTime>
+        <EndTime>14:00</EndTime>
+        <Duration>90</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>品尝杭帮菜</Title>
+        <Description>在知味观品尝正宗杭州美食</Description>
+        <Category>餐饮</Category>
+      </Activity>
+      
+      <Participants all="true"/>
+      
+      <Locations>
+        <Location type="restaurant">
+          <Name>知味观(湖滨店)</Name>
+          <Address>杭州市上城区仁和路83号</Address>
+          <Coordinates lat="30.2589" lng="120.1639"/>
+          <Contact>0571-87065871</Contact>
+          <Cuisine>杭帮菜</Cuisine>
+          <Specialties>
+            <Dish>西湖醋鱼</Dish>
+            <Dish>龙井虾仁</Dish>
+            <Dish>东坡肉</Dish>
+          </Specialties>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>300</Estimated>
+        <PerPerson>150</PerPerson>
+        <Category>餐饮</Category>
+      </Budget>
+      
+      <Extensions>
+        <ReservationRequired>true</ReservationRequired>
+        <PriceLevel>3</PriceLevel>
+        <Rating>4.5</Rating>
+        <Tips>建议提前预订，周末客流量大</Tips>
+      </Extensions>
+    </Event>
+    
+    <Event id="e4" type="accommodation">
+      <TimeSlot>
+        <Day>1</Day>
+        <StartTime>21:00</StartTime>
+        <!-- EndTime on next day -->
+      </TimeSlot>
+      
+      <Activity>
+        <Title>入住酒店</Title>
+        <Description>在西湖附近酒店休息</Description>
+        <Category>住宿</Category>
+      </Activity>
+      
+      <Participants all="true"/>
+      
+      <Locations>
+        <Location type="hotel">
+          <Name>杭州西湖国宾馆</Name>
+          <Address>杭州市西湖区杨公堤18号</Address>
+          <Coordinates lat="30.2423" lng="120.1305"/>
+          <RoomType>标准双床房</RoomType>
+          <Amenities>WiFi,早餐,停车场</Amenities>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>600</Estimated>
+        <Category>住宿</Category>
+      </Budget>
+      
+      <Extensions>
+        <CheckIn>14:00后</CheckIn>
+        <CheckOut>次日12:00前</CheckOut>
+        <BookingPlatform>携程</BookingPlatform>
+      </Extensions>
+    </Event>
+    
+    <!-- Day 2: 杭州第二天 -->
+    <Event id="e5" type="attraction">
+      <TimeSlot>
+        <Day>2</Day>
+        <StartTime>09:00</StartTime>
+        <EndTime>10:30</EndTime>
+        <Duration>90</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>雷峰塔</Title>
+        <Description>登塔俯瞰西湖全景，了解白娘子传说</Description>
+        <Category>景点</Category>
+      </Activity>
+      
+      <Participants all="true"/>
+      
+      <Locations>
+        <Location type="attraction">
+          <Name>雷峰塔</Name>
+          <Address>杭州市西湖区南山路15号</Address>
+          <Coordinates lat="30.2314" lng="120.1492"/>
+          <TicketInfo>门票40元/人</TicketInfo>
+          <OpenHours>08:00-20:00</OpenHours>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>80</Estimated>
+        <Category>门票</Category>
+        <PerPerson>40</PerPerson>
+      </Budget>
+      
+      <Extensions>
+        <PhotoSpot>true</PhotoSpot>
+        <BestTime>上午光线好</BestTime>
+        <Tips>建议早上前往，避开人流高峰</Tips>
+      </Extensions>
+    </Event>
+    
+    <!-- Day 3: 前往成都 -->
+    <Event id="e6" type="transport">
+      <TimeSlot>
+        <Day>3</Day>
+        <StartTime>09:00</StartTime>
+        <EndTime>14:00</EndTime>
+        <Duration>300</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>杭州到成都</Title>
+        <Description>乘坐高铁前往成都</Description>
+        <Category>交通</Category>
+      </Activity>
+      
+      <Participants all="true">
+        <SharedTransport>高铁G2365</SharedTransport>
+        <Route>杭州东 → 成都东</Route>
+      </Participants>
+      
+      <Locations>
+        <Location type="departure">
+          <Name>杭州东站</Name>
+          <Coordinates lat="30.2907" lng="120.2132"/>
+        </Location>
+        <Location type="arrival">
+          <Name>成都东站</Name>
+          <Coordinates lat="30.6308" lng="104.1457"/>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>1200</Estimated>
+        <PerPerson>600</PerPerson>
+        <Category>交通</Category>
+      </Budget>
+    </Event>
+    
+    <Event id="e7" type="attraction">
+      <TimeSlot>
+        <Day>3</Day>
+        <StartTime>15:00</StartTime>
+        <EndTime>17:30</EndTime>
+        <Duration>150</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>宽窄巷子</Title>
+        <Description>探索成都历史文化街区</Description>
+        <Category>景点</Category>
+      </Activity>
+      
+      <Participants all="true"/>
+      
+      <Locations>
+        <Location type="attraction">
+          <Name>宽窄巷子</Name>
+          <Address>成都市青羊区宽窄巷子</Address>
+          <Coordinates lat="30.6695" lng="104.0597"/>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>0</Estimated>
+        <Category>景点</Category>
+      </Budget>
+      
+      <Extensions>
+        <FreeEntry>true</FreeEntry>
+        <RecommendedDuration>2-3小时</RecommendedDuration>
+      </Extensions>
+    </Event>
+    
+    <!-- Day 4: 成都第二天 -->
+    <Event id="e8" type="attraction">
+      <TimeSlot>
+        <Day>4</Day>
+        <StartTime>09:00</StartTime>
+        <EndTime>12:00</EndTime>
+        <Duration>180</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>大熊猫基地</Title>
+        <Description>观赏国宝大熊猫</Description>
+        <Category>景点</Category>
+      </Activity>
+      
+      <Participants all="true"/>
+      
+      <Locations>
+        <Location type="attraction">
+          <Name>成都大熊猫繁育研究基地</Name>
+          <Address>成都市成华区熊猫大道1375号</Address>
+          <Coordinates lat="30.7323" lng="104.1425"/>
+          <TicketInfo>门票58元/人</TicketInfo>
+          <OpenHours>07:30-18:00</OpenHours>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>116</Estimated>
+        <Category>门票</Category>
+        <PerPerson>58</PerPerson>
+      </Budget>
+      
+      <Extensions>
+        <BestTime>早上熊猫活跃</BestTime>
+        <Tips>建议早到，熊猫上午比较活跃</Tips>
+      </Extensions>
+    </Event>
+    
+    <!-- Day 5: 返程日 -->
+    <Event id="e9" type="transport">
+      <TimeSlot>
+        <Day>5</Day>
+        <StartTime>10:00</StartTime>
+        <EndTime>14:00</EndTime>
+        <Duration>240</Duration>
+      </TimeSlot>
+      
+      <Activity>
+        <Title>返程</Title>
+        <Description>从成都返回各自城市</Description>
+        <Category>交通</Category>
+      </Activity>
+      
+      <Participants>
+        <PersonRef id="p1">
+          <Transport>飞机MU5402</Transport>
+          <Route>成都双流 → 上海虹桥</Route>
+        </PersonRef>
+        <PersonRef id="p2">
+          <Transport>飞机CA4113</Transport>
+          <Route>成都双流 → 北京首都</Route>
+        </PersonRef>
+      </Participants>
+      
+      <Locations>
+        <Location type="departure">
+          <Name>成都双流国际机场</Name>
+          <Coordinates lat="30.5785" lng="103.9470"/>
+        </Location>
+      </Locations>
+      
+      <Budget>
+        <Estimated>1600</Estimated>
+        <Category>交通</Category>
+        <Breakdown>
+          <Item person="p1" amount="800">机票</Item>
+          <Item person="p2" amount="800">机票</Item>
+        </Breakdown>
+      </Budget>
+    </Event>
+  </Timeline>
+  
+  <!-- 全局扩展信息 -->
+  <GlobalExtensions>
+    <Preferences>
+      <TravelPace>moderate</TravelPace>
+      <FoodPreferences>
+        <Preference>当地特色</Preference>
+        <Preference>百年老店</Preference>
+      </FoodPreferences>
+      <ActivityPreferences>
+        <Preference weight="0.4">文化历史</Preference>
+        <Preference weight="0.3">美食体验</Preference>
+        <Preference weight="0.2">自然风光</Preference>
+        <Preference weight="0.1">拍照打卡</Preference>
+      </ActivityPreferences>
+    </Preferences>
+    
+    <Notes>
+      <Note type="preparation">提前下载离线地图，准备充电宝</Note>
+      <Note type="weather">8月杭州较热，注意防晒</Note>
+      <Note type="booking">热门餐厅建议提前预订</Note>
+    </Notes>
+    
+    <EmergencyContacts>
+      <Contact type="general">紧急求助 110</Contact>
+      <Contact type="medical">医疗急救 120</Contact>
+    </EmergencyContacts>
+  </GlobalExtensions>
+</TravelPlan>

@@ -47,6 +47,7 @@ logs/
 *.db
 .home/
 output/
+outputs/
 results/
 
 # Jupyter Notebook

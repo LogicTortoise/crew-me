@@ -1,0 +1,23 @@
+{
+  "root": "TravelPlan",
+  "meta": "Meta",
+  "destination": "Destination",
+  "days_tag": "Days",
+  "day_tag": "Day",
+  "day_index_attr": "index",
+  "note": "Note",
+  "items_tag": "Items",
+  "item_tag": "Item",
+  "period_attr": "period",
+  "title": "Title",
+  "location": "Location",
+  "transport": "Transport",
+  "duration": "Duration",
+  "cost": "Cost",
+  "summary": "Summary",
+  "tips": "Tips",
+  "preferences": "Preferences",
+  "budget": "Budget",
+  "days_count": "Days"
+}
+
